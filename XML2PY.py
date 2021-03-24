@@ -22,7 +22,7 @@ def parser(data, tags):
             yield node.tag, node.text
 
 
-tree = ElementTree.parse('D:\8-65.xml')
+tree = ElementTree.parse('D:\TestXML.xml')
 root = tree.getroot()
 #print(root)
 for child in root:
@@ -72,13 +72,57 @@ for node in tree.findall('.//questionnote'):
     for snode in node.getchildren():
         print('\033[93m ' + 'Question Note:'+ '\033[0m',html2text.html2text(snode.text))
         qnote = html2text.html2text(snode.text)
+ansname = []
+tans = []
+boxsize = []
+for node in tree.findall('.//input'):   
+    warnings.filterwarnings("ignore")
+    for node2 in node.findall('.//name') :
+        print('\033[93m ' + 'name:'+ '\033[0m',html2text.html2text(node2.text).rstrip("\n")) 
+        ansname.append(html2text.html2text(node2.text).rstrip("\n"))       
+    for node2 in node.findall('.//tans') :
+        print('\033[93m ' + 'tans:'+ '\033[0m',html2text.html2text(node2.text).rstrip("\n"))        
+        tans.append(html2text.html2text(node2.text).rstrip("\n"))
+    for node2 in node.findall('.//boxsize') :
+        print('\033[93m ' + 'boxsize:'+ '\033[0m',html2text.html2text(node2.text).rstrip("\n")) 
+        boxsize.append(html2text.html2text(node2.text).rstrip("\n"))
 
+fback = []
+answertest = []
+tans2 = []
+sans = []
+testoptions = []     
+for node in tree.findall('.//prt'):   
+    warnings.filterwarnings("ignore")
+    for node2 in node.findall('.//name'):
+        print('\033[93m ' + 'name:'+ '\033[0m',html2text.html2text(node2.text)) 
+        fback.append(html2text.html2text(node2.text).rstrip("\n")) 
+        
+    for node2 in node.findall('.//answertest') :
+        print('\033[93m ' + 'tans:'+ '\033[0m',html2text.html2text(node2.text)) 
+        answertest.append(html2text.html2text(node2.text).rstrip("\n")) 
+    for node2 in node.findall('.//tans') :
+        print('\033[93m ' + 'boxsize:'+ '\033[0m',html2text.html2text(node2.text)) 
+        tans2.append(html2text.html2text(node2.text).rstrip("\n")) 
+    for node2 in node.findall('.//sans') :
+        print('\033[93m ' + 'tans:'+ '\033[0m',html2text.html2text(node2.text)) 
+        sans.append(html2text.html2text(node2.text).rstrip("\n")) 
+    for node2 in node.findall('.//testoptions') :
+        print('\033[93m ' + 'boxsize:'+ '\033[0m',html2text.html2text(node2.text)) 
+        testoptions.append(html2text.html2text(node2.text).rstrip("\n"))        
 
-    
+zero = '0'
+for i  in fback:
+    if(i == '0'):
+	    fback.remove(i)
 
-     
-     
 name = name.rstrip("\n")
+'''
+fback = fback.rstrip("\n")
+answertest = answertest.rstrip("\n")
+sans = sans.rstrip("\n")
+testoptions = testoptions.rstrip("\n")
+'''
 Write_Name = "test = STACKQuestion(\""+name+"\")\n\n"
 #qvar = qvar.rstrip("\n")
 
@@ -87,9 +131,10 @@ Write_InputQTest = "test.inputQuestionText(r\"\"\" "+qtest+"  \"\"\")\n\n"
 Write_SpecFeedback = "test.inputSpecificFeedbackText(r\"\"\" "+sfeedback+"  \"\"\")\n\n"
 Write_GenFeedback = "test.inputGeneralFeedbackText(r\"\"\" "+gfeedback+"  \"\"\")\n\n"
 Write_InputQNote = "test.inputQuestionNote(r\"\"\" "+qnote+"  \"\"\")\n\n"
-Write_InputAns = "test.inputAnswerField(\"ans1\", \"P\" , \"5\")\n\n"
-Write_InputParts = "test.inputPartField(\"prt1\", \"NumRelative\" , \"P\",\"ans1\", \"0.05\")\n\n"
-f = open("8-65.py", "w")
+
+
+
+f = open("stackwriter.py", "w")
 f.write("from core import STACKQuestion\n\n")
 f.write(Write_Name)
 f.write(Write_InputQVar)
@@ -97,10 +142,19 @@ f.write(Write_InputQTest)
 f.write(Write_SpecFeedback)
 f.write(Write_GenFeedback)
 f.write(Write_InputQNote)
-f.write(Write_InputAns)
-f.write(Write_InputParts)
+i=0
+for i in range(len(ansname)):
+    Write_InputAns = "test.inputAnswerField(\""+ansname[i]+"\", \""+tans[i]+"\" , \""+boxsize[i]+"\")\n\n"
+    f.write(Write_InputAns)
+j=0    
+for j in range(len(answertest)):    
+    Write_InputParts = "test.inputPartField(\""+fback[j]+"\", \""+answertest[j]+"\" , \""+tans2[j]+"\",\""+sans[j]+"\", \""+testoptions[j]+"\")\n\n"
+    f.write(Write_InputParts)
+    
+
 f.write("test.saveQuestion()")
 f.close()
+
 
 
 #with open("stackwriter.py", "w") as f:
